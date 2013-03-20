@@ -12,6 +12,8 @@ Ball {
 
 	private Vec2f pos, vel, acc;
 	
+	private int radiusSquared;
+	
 	private int h, w;
 
 	
@@ -47,6 +49,7 @@ Ball {
 		this.w = w;
 		vel = new Vec2f(1, 1);
 		acc = new Vec2f(0, 0);
+		radiusSquared = (h/2);
 	}
 	
 	public void update(int x, int y)
@@ -79,6 +82,13 @@ Ball {
 	{
 		for (Ball ball : balls)
 		{
+			Vec2f d = ball.pos.minus(this.pos);
+			if(d.lengthSquared() == this.radiusSquared + ball.radiusSquared)
+			{
+				System.out.println("collide");
+				
+			}
+			/*
 			if (!(ball.pos.equals(this.pos)))
 			{
 				Vec2f dis = this.pos.minus(ball.pos);
@@ -86,7 +96,7 @@ Ball {
 				{
 					System.out.println(dis.x + "x" + dis.y);
 				}
-			}
+			}*/
 		}
 	}
 }
