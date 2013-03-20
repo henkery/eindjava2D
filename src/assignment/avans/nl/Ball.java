@@ -1,5 +1,6 @@
 package assignment.avans.nl;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -14,7 +15,9 @@ Ball {
 	
 	private int radiusSquared;
 	
-	private int h, w;
+	private int h, w,r;
+
+	private Color color;
 
 	
 	public Vec2f getPos() {
@@ -42,19 +45,30 @@ Ball {
 		acc = new Vec2f(0, 0);
 	}
 	
-	public Ball(Vec2f pos, int h, int w)
+	public Color randomColor()
+	{
+	return new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
+	}
+	
+	public Ball(Vec2f pos, Vec2f vel, int h, int w)
 	{
 		this.pos = pos;
 		this.h = h;
 		this.w = w;
-		vel = new Vec2f(1, 1);
+		this.vel = vel;
 		acc = new Vec2f(0, 0);
-		radiusSquared = (h/2);
+		r = h/2;
+		radiusSquared = (int) (r*r);
+		color = randomColor();
 	}
 	
 	public void update(int x, int y)
 	{
-		if ((pos.x-(h/2) >= 0 && pos.x-(h/2) <= x-h) && (pos.y-(w/2) >= 0 && pos.y-(w/2) <= y-w))
+		pos.plusEquals(vel);
+		vel.plusEquals(acc);
+		
+		
+		/*if ((pos.x-(h/2) >= 0 && pos.x-(h/2) <= x-h) && (pos.y-(w/2) >= 0 && pos.y-(w/2) <= y-w))
 		{
 			pos.plusEquals(vel);
 			vel.plusEquals(acc);
@@ -71,32 +85,37 @@ Ball {
 			pos.plusEquals(vel);
 			vel.plusEquals(acc);
 		}
-		
+		*/
 	}
+	
 	public void draw(Graphics g)
 	{
 		Graphics2D g2 = (Graphics2D)g;
+		g2.setColor(color);
 		g2.fill(new Ellipse2D.Double(pos.x-(h/2), pos.y-(w/2), h, w));
 	}
 	public void collide(ArrayList<Ball> balls)
 	{
-		for (Ball ball : balls)
+		for(int i = 0; i < balls.size(); i++)
 		{
-			Vec2f d = ball.pos.minus(this.pos);
-			if(d.lengthSquared() == this.radiusSquared + ball.radiusSquared)
+			for (Ball ball : balls)
 			{
-				System.out.println("collide");
-				
-			}
-			/*
-			if (!(ball.pos.equals(this.pos)))
-			{
-				Vec2f dis = this.pos.minus(ball.pos);
-				if (dis.x <= (h/2) && dis.y <= (w/2))
+				//Ball ball = balls.get(i);
+				if (balls.indexOf(ball) > i && !this.equals(ball))
 				{
-					System.out.println(dis.x + "x" + dis.y);
+					Vec2f d = ball.pos.minus(this.pos);
+					
+					if(d.lengthSquared() <= ((this.r + ball.r)*(this.r + ball.r)))
+					{
+						//this.vel = new Vec2f(-this.vel.x, -this.vel.y);
+						//ball.vel = new Vec2f(-ball.vel.x, -ball.vel.y);
+						this.vel.x = -this.vel.x;
+						this.vel.y = -this.vel.y;
+						ball.vel.x = -ball.vel.x;
+						ball.vel.y = -ball.vel.y;
+					}
 				}
-			}*/
+			}
 		}
 	}
 }
