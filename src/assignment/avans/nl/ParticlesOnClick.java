@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 public class ParticlesOnClick extends JFrame {
 
@@ -30,6 +31,16 @@ public class ParticlesOnClick extends JFrame {
 		this.setContentPane(mainPanel);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		while (true)
+		{
+			mainPanel.repaint();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 	}
 
@@ -44,11 +55,8 @@ private int teller = 0;
 private int x = 100;
 private int y = 100;
 
-private Ellipse2D circle1;
-private Ellipse2D circle2;
-private Point move1;
-private Point move2;
-
+//private Ball ball1,ball2;
+private ArrayList<Ball> balls;
 
 boolean isSelected = false;
 
@@ -59,31 +67,12 @@ public DragAShapePanel()
 {
 	setPreferredSize( new Dimension(640,480));
 	
-	circle1 = new Ellipse2D.Double(50, 50, 100, 100);
-	circle2 = new Ellipse2D.Double(150, 150, 100, 100);
-	move1 = new Point(1, 1);
-	move2 = new Point(-1, -1);
-	
 	addMouseListener(this);
 	addMouseMotionListener(this);
-	Runnable run1 = new Runnable() {
-        public void run() {
-        	while (true)
-        	{
-                try {
-                    Thread.sleep(10);
-                    repaint();
-                    moveCirlces();
-                    //System.out.println(ai.getData());
-                } catch(Exception e) {
-                    System.out.println(e);
-                }
-        	}
-        }
-        
-    };
-    Thread thread1 = new Thread(run1);
-    thread1.start();
+	balls = new ArrayList<Ball>();
+	balls.add(new Ball(new Vec2f(100, 100), 100, 100));
+	balls.add(new Ball(new Vec2f(200, 100), 100, 100));
+	balls.add(new Ball(new Vec2f(300, 100), 100, 100));
 }
 
 // Repaint
@@ -94,10 +83,14 @@ public void paintComponent(Graphics g)
 	g2.setColor(Color.yellow);
 	g2.setBackground(Color.black);
 	
-	g2.fill(circle1);
-	g2.fill(circle2);
-	
-	
+	//ball1.update(this.getWidth(), this.getHeight());
+	//ball1.draw(g);
+	for (Ball ball : balls)
+	{
+		ball.update(this.getWidth(), this.getHeight());
+		ball.collide(balls);
+		ball.draw(g);
+	}
 	
 	if (knal)
 	{
@@ -130,7 +123,7 @@ public void moveCirlces()
 {
 	//pos += vel;
 	
-	System.out.println("window size is " + this.getWidth() + "x" + this.getWidth());
+/*	System.out.println("window size is " + this.getWidth() + "x" + this.getWidth());
 	//vel += acc;
 	if (circle1.getMinX() > 0 && circle1.getMaxX() < this.getHeight())
 	{
@@ -170,6 +163,7 @@ public void moveCirlces()
 		System.out.println("changing move1 X 4");
 	}
 	System.out.println("current location is " + circle1.getX() + "x" + circle1.getY());
+	*/
 }
 
 @Override
