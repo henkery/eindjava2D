@@ -15,7 +15,8 @@ Ball {
 	
 	private int radiusSquared;
 	
-	private int h, w,r;
+	private boolean held;
+	private int h, w,r, mass;
 
 	private Color color;
 
@@ -60,32 +61,47 @@ Ball {
 		r = h/2;
 		radiusSquared = (int) (r*r);
 		color = randomColor();
+		held = false;
 	}
 	
-	public void update(int x, int y)
+	public boolean isClicked(int x, int y)
 	{
-		pos.plusEquals(vel);
-		vel.plusEquals(acc);
-		
-		
-		/*if ((pos.x-(h/2) >= 0 && pos.x-(h/2) <= x-h) && (pos.y-(w/2) >= 0 && pos.y-(w/2) <= y-w))
+		//System.out.println("this x is " + getPos().x + " it should be " + x);
+//		System.out.println("x match is " + ((getPos().x + r >= x) && (getPos().x -r <= x)));
+//		System.out.println("y match is " + ((getPos().y + r >= y) && (getPos().y -r <= y)) + "\n\n");
+		boolean dis = ((getPos().x + r >= x) && (getPos().x -r <= x)) && ((getPos().y + r >= y) && (getPos().y -r <= y));
+		held = dis;
+		return (dis);
+	}
+	
+	public void gravCalc()
+	{
+		vel.x = -1;
+		vel.y = -1;
+	}
+	public void update(Ballcage cage)
+	{
+		if (!held)
 		{
 			pos.plusEquals(vel);
 			vel.plusEquals(acc);
 		}
-		else if (!(pos.x-(h/2) >= 0 && pos.x-(h/2) <= x-h))
+//		else
+//			held = false;
+		int state = cage.collideWithBall(this);
+		switch (state)
 		{
-			vel.x = -vel.x;
-			pos.plusEquals(vel);
-			vel.plusEquals(acc);
+			case 0:	break;
+			
+			case 1: vel.x = -vel.x;
+					System.out.println("x changed");
+					break;
+			
+			case 2: vel.y = -vel.y;
+					System.out.println("y changed");
+					
+					break;
 		}
-		else if (!(pos.y-(w/2) >= 0 && pos.y-(w/2) <= y-w))
-		{
-			vel.y = -vel.y;
-			pos.plusEquals(vel);
-			vel.plusEquals(acc);
-		}
-		*/
 	}
 	
 	public void draw(Graphics g)
@@ -101,7 +117,7 @@ Ball {
 			for (Ball ball : balls)
 			{
 				//Ball ball = balls.get(i);
-				if (balls.indexOf(ball) > i && !this.equals(ball))
+				if (balls.indexOf(ball) >= i && !this.equals(ball))
 				{
 					Vec2f d = ball.pos.minus(this.pos);
 					
@@ -109,13 +125,19 @@ Ball {
 					{
 						//this.vel = new Vec2f(-this.vel.x, -this.vel.y);
 						//ball.vel = new Vec2f(-ball.vel.x, -ball.vel.y);
-						this.vel.x = -this.vel.x;
-						this.vel.y = -this.vel.y;
-						ball.vel.x = -ball.vel.x;
-						ball.vel.y = -ball.vel.y;
+						float xt = ball.vel.x;
+						float yt = ball.vel.y;
+						ball.vel.x = this.vel.x;
+						ball.vel.y = this.vel.y;
+						this.vel.x = xt;
+						this.vel.y = yt;
+						
 					}
 				}
 			}
 		}
+	}
+	public int getRadius() {
+		return r;
 	}
 }
