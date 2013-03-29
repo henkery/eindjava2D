@@ -2,6 +2,8 @@ package assignment.avans.nl;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -31,13 +33,20 @@ public class BallsnStuff extends JFrame {
 		this.setContentPane(mainPanel);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		JToggleButton gravBut = new JToggleButton("toggle gravity");
+		gravBut.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                
+            }
+        });
+		this.add(gravBut);
 		while (true)
 		{
 			mainPanel.repaint();
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				// TODO Aut-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -64,6 +73,10 @@ private boolean knal;
 
 private Ballcage cage;
 
+private boolean grav;
+
+
+
 /* Constructor */
 public DragAShapePanel()
 {
@@ -79,6 +92,7 @@ public DragAShapePanel()
 	balls.add(new Ball(new Vec2f(400, 100), new Vec2f(0, 0), 100, 100));
 	//balls.add(new Ball(new Vec2f(200, 100), 100, 100));
 	balls.add(new Ball(new Vec2f(600, 100), new Vec2f(-1, 0), 100, 100));
+	grav = true;
 }
 
 // Repaint
@@ -94,7 +108,7 @@ public void paintComponent(Graphics g)
 	cage.resizeCage(this.getHeight(), this.getWidth());
 	for (Ball ball : balls)
 	{
-		ball.update(cage); 
+		ball.update(cage, grav); 
 		ball.collide(balls);
 		ball.draw(g);
 	}
@@ -119,6 +133,26 @@ public void paintComponent(Graphics g)
 	
 }
 
+public void setGrav(boolean grav)
+{
+	this.grav = grav;
+}
+
+public boolean getGrav()
+{
+	return grav;
+}
+
+
+public void toggleGrav()
+{
+	grav = !grav;
+}
+public void ting()
+{
+	repaint();
+}
+
 public Color randomColor()
 {
 	return new Color((int) Math.floor(Math.random()*256), (int) Math.floor(Math.random()*256), (int) Math.floor(Math.random()*256));
@@ -130,31 +164,8 @@ public void mouseDragged(MouseEvent arg0) {
 	{
 		if (item.isClicked(arg0.getX(), arg0.getY()))
 		{
-			int smallX;
-			int smallY;
-			int largeX;
-			int largeY;
-			if (arg0.getX() < item.getPos().x)
-			{
-				smallX = (int) arg0.getX();
-				largeX = (int) item.getPos().x;
-			}
-			else
-			{
-				smallX = (int) item.getPos().x;
-				largeX = (int) arg0.getX();
-			}
-			if (arg0.getY() < item.getPos().y)
-			{
-				smallY = (int) arg0.getY();
-				largeY = (int) item.getPos().y;
-			}
-			else
-			{
-				smallY= (int) item.getPos().y;
-				largeY = (int) arg0.getY();
-			}
-			Vec2f vel = new Vec2f(largeX - smallX, largeY - smallY);
+//			Vec2f vel = new Vec2f(largeX - smallX, largeY - smallY);
+			Vec2f vel = new Vec2f(arg0.getX() - item.getPos().x, arg0.getY()- item.getPos().y);
 			
 			item.setPos(new Vec2f(arg0.getX(), arg0.getY()));
 			item.setVel(vel);
@@ -168,7 +179,7 @@ public void mouseDragged(MouseEvent arg0) {
 
 @Override
 public void mouseMoved(MouseEvent arg0) {
-	System.out.println( "mousemove at " + arg0.getX() + " " + arg0.getY() );
+//	System.out.println( "mousemove at " + arg0.getX() + " " + arg0.getY() );
 	x = arg0.getX();
 	y = arg0.getY();
 	knal = true;
@@ -201,6 +212,11 @@ public void mousePressed(MouseEvent arg0) {
 
 @Override
 public void mouseReleased(MouseEvent arg0) {
-	
+	for (Ball item : balls)
+	{
+//		Vec2f vel = new Vec2f(largeX - smallX, largeY - smallY);
+		//Vec2f vel = new Vec2f(arg0.getX() - item.getPos().x, arg0.getY()- item.getPos().y);
+		item.release();
+	}
 }
 }

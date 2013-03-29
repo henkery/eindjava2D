@@ -20,6 +20,8 @@ Ball {
 
 	private Color color;
 
+	private boolean grav;
+
 	
 	public Vec2f getPos() {
 		return pos;
@@ -62,6 +64,7 @@ Ball {
 		radiusSquared = (int) (r*r);
 		color = randomColor();
 		held = false;
+		mass = 1;
 	}
 	
 	public boolean isClicked(int x, int y)
@@ -76,15 +79,21 @@ Ball {
 	
 	public void gravCalc()
 	{
-		vel.x = -1;
-		vel.y = -1;
+		vel.y = vel.y + (int)((mass*9.81)/5);
 	}
-	public void update(Ballcage cage)
+	public void update(Ballcage cage, boolean grav)
 	{
+		this.grav = grav;
 		if (!held)
 		{
+			if (this.grav)
+			{
+				gravCalc();
+			}
 			pos.plusEquals(vel);
 			vel.plusEquals(acc);
+			
+			
 		}
 //		else
 //			held = false;
@@ -93,12 +102,19 @@ Ball {
 		{
 			case 0:	break;
 			
-			case 1: vel.x = -vel.x;
-					System.out.println("x changed");
+			case 1: if (grav)
+						vel.x = (float) (-vel.x/1.5);
+					else
+						vel.x = -vel.x;
+					
+//					System.out.println("x changed");
 					break;
 			
-			case 2: vel.y = -vel.y;
-					System.out.println("y changed");
+			case 2: if (grav)
+						vel.y =  (float) (-vel.y/1.5);
+					else
+						vel.y =  -vel.y;
+//					System.out.println("y changed");
 					
 					break;
 		}
@@ -139,5 +155,8 @@ Ball {
 	}
 	public int getRadius() {
 		return r;
+	}
+	public void release() {
+		held = false;
 	}
 }
