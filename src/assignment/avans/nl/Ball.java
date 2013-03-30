@@ -81,7 +81,7 @@ Ball {
 	{
 		vel.y = vel.y + (int)((mass*9.81)/5);
 	}
-	public void update(Ballcage cage, boolean grav)
+	public void update(Ballcage cage, boolean grav, boolean b)
 	{
 		this.grav = grav;
 		if (!held)
@@ -102,7 +102,7 @@ Ball {
 		{
 			case 0:	break;
 			
-			case 1: if (grav)
+			case 1: if (!b)
 						vel.x = (float) (-vel.x/1.5);
 					else
 						vel.x = -vel.x;
@@ -110,7 +110,7 @@ Ball {
 //					System.out.println("x changed");
 					break;
 			
-			case 2: if (grav)
+			case 2: if (!b)
 						vel.y =  (float) (-vel.y/1.5);
 					else
 						vel.y =  -vel.y;
@@ -143,10 +143,23 @@ Ball {
 						//ball.vel = new Vec2f(-ball.vel.x, -ball.vel.y);
 						float xt = ball.vel.x;
 						float yt = ball.vel.y;
-						ball.vel.x = this.vel.x;
-						ball.vel.y = this.vel.y;
-						this.vel.x = xt;
-						this.vel.y = yt;
+						ball.vel.x = -(ball.vel.x - this.vel.x)/2;
+						ball.vel.y = -(ball.vel.y - this.vel.y)/2;
+						this.vel.x = -(this.vel.x - xt)/2;
+						this.vel.y = -(this.vel.y - yt)/2;
+						
+						/*if (this.pos.x-ball.pos.x < r){
+							float x2 =  ball.pos.x;
+							ball.pos.x += (x2-this.pos.x) + ((ball.pos.x > 0)?-r:+r);
+							this.pos.x += (this.pos.x-x2) + ((this.pos.x > 0)?-r:+r);
+						}*/
+						
+						
+						//new version
+						
+						//Vec2f ld = this.getVel();
+						//ball.vel.minusEquals(this.vel);
+						//this.vel.minusEquals(ld);
 						
 					}
 				}

@@ -13,6 +13,9 @@ import java.util.ArrayList;
 
 public class BallsnStuff extends JFrame {
 
+	private static boolean grav;
+	private static boolean wallA;
+
 	/**
 	 * @param args
 	 */
@@ -26,20 +29,33 @@ public class BallsnStuff extends JFrame {
 	
 	public BallsnStuff()
 	{
+		
 		super("muh collisions");
+		grav = false;
+		wallA = true;
 		
 		JPanel mainPanel = new DragAShapePanel();
 		mainPanel.setBackground(Color.black);
+		this.setSize(800, 600);
 		this.setContentPane(mainPanel);
 		this.setVisible(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		JToggleButton gravBut = new JToggleButton("toggle gravity");
+		JButton gravBut = new JButton("toggle gravity");
 		gravBut.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
+                grav = !grav;
             }
         });
-		this.add(gravBut);
+		JButton wallBut = new JButton("toggle walls");
+		wallBut.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                wallA = !wallA;
+            }
+        });
+		mainPanel.add(wallBut);
+		mainPanel.add(gravBut);
+		
+		
 		while (true)
 		{
 			mainPanel.repaint();
@@ -51,6 +67,16 @@ public class BallsnStuff extends JFrame {
 			}
 		}
 		
+	}
+
+	public static boolean getGrav() {
+		// TODO Auto-generated method stub
+		return grav;
+	}
+
+	public static boolean getWallA() {
+		// TODO Auto-generated method stub
+		return wallA;
 	}
 
 }
@@ -103,12 +129,16 @@ public void paintComponent(Graphics g)
 	g2.setColor(Color.yellow);
 	g2.setBackground(Color.black);
 	
+	g2.drawString("Gravity is " + (BallsnStuff.getGrav()?"on":"off"), 10, 10);
+	g2.drawString("Walls do" + (BallsnStuff.getWallA()?"n't ":" ") + "absorb energy", 10, 25);
+	
 	//ball1.update(this.getWidth(), this.getHeight());
 	//ball1.draw(g);
+	
 	cage.resizeCage(this.getHeight(), this.getWidth());
 	for (Ball ball : balls)
 	{
-		ball.update(cage, grav); 
+		ball.update(cage, BallsnStuff.getGrav(), BallsnStuff.getWallA()); 
 		ball.collide(balls);
 		ball.draw(g);
 	}
