@@ -9,11 +9,9 @@ import java.util.ArrayList;
 
 public class Block extends PhysShape {
 
-	private Rectangle block;
 
 	public Block(Vec2f pos, Vec2f vel, int h, int w) {
 		super(pos, vel, h, w);
-		block = new Rectangle((int)pos.x-(h/2), (int)pos.y-(h/2), h*2, w*2);
 
 	}
 
@@ -94,6 +92,12 @@ public class Block extends PhysShape {
 					
 					break;
 		}
+		
+	}
+
+	@Override
+	public void calcMass() {
+		// TODO Auto-generated method stub
 		
 	}
 

@@ -2,10 +2,6 @@ package assignment.avans.nl;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public abstract class PhysShape {
@@ -18,8 +14,6 @@ public abstract class PhysShape {
 	protected Color color;
 
 	protected boolean grav;
-
-	protected boolean hit;
 
 	
 
@@ -71,7 +65,7 @@ public abstract class PhysShape {
 	
 	public void gravCalc()
 	{
-		vel.y = vel.y + (int)((mass*9.81)/5);
+		acc.y = vel.y + (int)((mass*9.81)/5);
 	}
 	public abstract void update(LevelCage cage, boolean grav, boolean b);
 	public abstract int getType();
@@ -84,4 +78,11 @@ public abstract class PhysShape {
 	}
 
 	public abstract int getRadius();
+
+	public boolean isHeld() {
+		// TODO Auto-generated method stub
+		return held;
+	}
+
+	public abstract void calcMass();
 }

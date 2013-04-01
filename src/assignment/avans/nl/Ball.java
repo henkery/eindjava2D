@@ -1,11 +1,8 @@
 package assignment.avans.nl;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 public class Ball extends PhysShape {
@@ -40,6 +37,7 @@ public class Ball extends PhysShape {
 				gravCalc();
 			}
 			pos.plusEquals(vel);
+			//acc.divideBy(2);
 			vel.plusEquals(acc);
 			
 			
@@ -99,26 +97,23 @@ public class Ball extends PhysShape {
 							//ball.vel = new Vec2f(-ball.vel.x, -ball.vel.y);
 							
 							
-							if (!hit){
-								float xt = shape.getVel().x;
-								float yt = shape.getVel().y;
-								shape.getVel().x = -(shape.getVel().x - this.vel.x)/2;
-								shape.getVel().y = -(shape.getVel().y - this.vel.y)/2;
-								this.vel.x = -(this.vel.x - xt)/2;
-								this.vel.y = -(this.vel.y - yt)/2;
-								hit =true;
-	//							float x2 =  ball.pos.x;
-	//							ball.pos.x = this.pos.x +((ball.pos.x > this.pos.x)?(ball.r):-(ball.r));//(x2-this.pos.x) + ((ball.pos.x > 0)?-r:+r);
-	//							this.pos.x = x2 +((this.pos.x > ball.pos.x)?(this.r):-(this.r));//(this.pos.x-x2) + ((this.pos.x > 0)?-r:+r);
-							}
+							float xt = shape.getVel().x;
+							float yt = shape.getVel().y;
+							shape.getVel().x = -(shape.getVel().x - this.vel.x)/2;
+							shape.getVel().y = -(shape.getVel().y - this.vel.y)/2;
+							this.vel.x = -(this.vel.x - xt)/2;
+							this.vel.y = -(this.vel.y - yt)/2;
+	//						float x2 =  ball.pos.x;
+	//						ball.pos.x = this.pos.x +((ball.pos.x > this.pos.x)?(ball.r):-(ball.r));//(x2-this.pos.x) + ((ball.pos.x > 0)?-r:+r);
+	//						this.pos.x = x2 +((this.pos.x > ball.pos.x)?(this.r):-(this.r));//(this.pos.x-x2) + ((this.pos.x > 0)?-r:+r);
 							this.pos.plus(this.vel.negate());
 							shape.getPos().plus(shape.getVel().negate());
 							
-							if (d.lengthSquared() < ((this.r + shape.getRadius())*(this.r + shape.getRadius()))){
+							/*if (d.lengthSquared() < ((this.r + shape.getRadius())*(this.r + shape.getRadius()))){
 								float y2 =  shape.getPos().y;
 								shape.getPos().y = this.pos.y +((shape.getPos().y > this.pos.y)?(shape.getRadius()):-(shape.getRadius()));//(y2-this.pos.y) + ((ball.pos.y > 0)?-r:+r)
 								this.pos.y = y2 +((this.pos.y > shape.getPos().y)?(this.r):-(this.r));//(this.pos.y-y2) + ((this.pos.y > 0)?-r:+r);
-							}
+							}*/
 							
 							
 							//new version
@@ -128,8 +123,6 @@ public class Ball extends PhysShape {
 							//this.vel.minusEquals(ld);
 							
 						}
-						else
-							hit = false;
 					}
 				}
 			}
@@ -140,5 +133,11 @@ public class Ball extends PhysShape {
 	@Override
 	public int getType() {
 		return 1;
+	}
+
+	@Override
+	public void calcMass() {
+		r = h/2;
+		
 	}
 }

@@ -134,4 +134,10 @@ public class Vec2f
 		return new Vec2f(-x, -y);
 	}
 
+	public void divideBy(int i) {
+		x = x/i;
+		y= y/i;
+		
+	}
+
 }

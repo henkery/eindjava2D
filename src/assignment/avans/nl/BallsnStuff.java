@@ -106,6 +106,10 @@ private boolean grav;
 
 private int typeShape;
 
+protected boolean debugB;
+
+private boolean drag;
+
 
 
 /* Constructor */
@@ -124,6 +128,15 @@ public DragAShapePanel()
 	//balls.add(new Ball(new Vec2f(400, 100), new Vec2f(0, 0), 100, 100));
 	//balls.add(new Ball(new Vec2f(200, 100), 100, 100));
 	//balls.add(new Ball(new Vec2f(600, 100), new Vec2f(-1, 0), 100, 100));
+	debugB = false;
+	JButton wyhDebug = new JButton("toggle debug data");
+	wyhDebug.addActionListener(new ActionListener() {
+
+		public void actionPerformed(ActionEvent e) {
+            debugB = !debugB;
+        }
+    });
+	this.add(wyhDebug);
 	grav = true;
 	typeShape = 1;
 }
@@ -133,26 +146,39 @@ public void paintComponent(Graphics g)
 {
 	super.paintComponent(g);
 	Graphics2D g2 = (Graphics2D)g;
-	g2.setColor(Color.yellow);
 	g2.setBackground(Color.black);
-	
-	g2.drawString("Gravity is " + (BallsnStuff.getGrav()?"on":"off"), 10, 10);
-	g2.drawString("Walls do" + (BallsnStuff.getWallA()?"n't ":" ") + "absorb energy", 10, 25);
-	g2.drawString("Selected type shape is " + typeShape, 10, 40);
-	
-	
-	//ball1.update(this.getWidth(), this.getHeight());
-	//ball1.draw(g);
-	
+	int a = 60;
+	int d = 0;
 	cage.resizeCage(this.getHeight(), this.getWidth());
 	for (PhysShape shape : shapes)
 	{
+	
 		shape.update(cage, BallsnStuff.getGrav(), BallsnStuff.getWallA()); 
 		shape.collide(shapes);
 		
 		
 		shape.draw(g);
+		if (debugB)
+		{
+			g2.drawString("this shape has " + shape.getType() + " as shapeType", d, a);
+			g2.drawString("this shape has a positional vector of " + shape.getPos().x + "x" + shape.getPos().y, d, a+15);
+			g2.drawString("this shape has a velocity vector of " + shape.getVel().x + "x" + shape.getVel().y, d, a+30);
+			g2.drawString("this shape has a acceleration vector of " + shape.getAcc().x + "x" + shape.getAcc().y, d, a+45);
+			a += 60;
+			if (a+60 > this.getHeight())
+			{
+				a = 10;
+				d += 320;
+			}
+		}
 	}
+	g2.setColor(Color.red);
+	
+	g2.fill(new Rectangle2D.Double(0,0,200, 45));
+	g2.setColor(Color.yellow);
+	g2.drawString("Gravity is " + (BallsnStuff.getGrav()?"on":"off"), 10, 10);
+	g2.drawString("Walls do" + (BallsnStuff.getWallA()?"n't ":" ") + "absorb energy", 10, 25);
+	g2.drawString("Selected type shape is " + typeShape, 10, 40);
 	
 	if (knal)
 	{
@@ -201,15 +227,16 @@ public Color randomColor()
 
 @Override
 public void mouseDragged(MouseEvent arg0) {
+	drag = true;
 	for (PhysShape item : shapes)
 	{
 		if (item.isClicked(arg0.getX(), arg0.getY()))
 		{
 //			Vec2f vel = new Vec2f(largeX - smallX, largeY - smallY);
-			Vec2f vel = new Vec2f(arg0.getX() - item.getPos().x, arg0.getY()- item.getPos().y);
-			
+			Vec2f tempAcc = new Vec2f(arg0.getX() - item.getPos().x, arg0.getY()- item.getPos().y);
+			item.setVel(new Vec2f());
 			item.setPos(new Vec2f(arg0.getX(), arg0.getY()));
-			item.setVel(vel);
+			item.setAcc(tempAcc);
 		}
 //		System.out.println("ball is " + item.isClicked(arg0.getX(), arg0.getY()) + "clicked\n\n");
 	}
@@ -256,7 +283,6 @@ public void mouseExited(MouseEvent arg0) {
 
 @Override
 public void mousePressed(MouseEvent arg0) {
-	// TODO Auto-generated method stub
 }
 
 @Override
@@ -267,15 +293,31 @@ public void mouseReleased(MouseEvent arg0) {
 		//Vec2f vel = new Vec2f(arg0.getX() - item.getPos().x, arg0.getY()- item.getPos().y);
 		item.release();
 	}
+	drag = false;
 }
 
 @Override
 public void mouseWheelMoved(MouseWheelEvent e) {
-	typeShape += e.getWheelRotation();
-	if (typeShape < 1)
-		typeShape = 2;
-	else if (typeShape > 2)
-		typeShape = 1;
+	if (!drag)
+	{
+		typeShape += e.getWheelRotation();
+		if (typeShape < 1)
+			typeShape = 2;
+		else if (typeShape > 2)
+			typeShape = 1;
+	}
+	else
+	{
+		for (PhysShape item : shapes)
+		{
+			if (item.isHeld())
+			{
+				item.h += e.getWheelRotation();
+				item.w += e.getWheelRotation();
+				item.calcMass();
+			}
+		}	
+	}
 	
 }
 }
