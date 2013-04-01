@@ -1,6 +1,7 @@
 package assignment.avans.nl;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class BallsnStuff extends JFrame {
 
@@ -110,6 +112,10 @@ protected boolean debugB;
 
 private boolean drag;
 
+private int id;
+
+private AbstractButton removeDead;
+
 
 
 /* Constructor */
@@ -137,6 +143,24 @@ public DragAShapePanel()
         }
     });
 	this.add(wyhDebug);
+	
+	removeDead = new JButton("Delete dead shapes");
+	removeDead.addActionListener(new ActionListener() {
+
+		public void actionPerformed(ActionEvent e) {
+            Iterator it = shapes.iterator();
+            while (it.hasNext())
+            {
+            	Object item = it.next();
+            	if (item.toString().contains("NaN"))
+            	{
+					it.remove();
+            	}
+            }
+        }
+    });
+	removeDead.setVisible(false);
+	this.add(removeDead);
 	grav = true;
 	typeShape = 1;
 }
@@ -149,6 +173,7 @@ public void paintComponent(Graphics g)
 	g2.setBackground(Color.black);
 	int a = 60;
 	int d = 0;
+	removeDead.setVisible(debugB);
 	cage.resizeCage(this.getHeight(), this.getWidth());
 	for (PhysShape shape : shapes)
 	{
@@ -161,10 +186,20 @@ public void paintComponent(Graphics g)
 		if (debugB)
 		{
 			g2.drawString("this shape has " + shape.getType() + " as shapeType", d, a);
-			g2.drawString("this shape has a positional vector of " + shape.getPos().x + "x" + shape.getPos().y, d, a+15);
-			g2.drawString("this shape has a velocity vector of " + shape.getVel().x + "x" + shape.getVel().y, d, a+30);
-			g2.drawString("this shape has a acceleration vector of " + shape.getAcc().x + "x" + shape.getAcc().y, d, a+45);
-			a += 60;
+			g2.drawString("this shape has id: " + shape.getID(), d, a+15);
+			if (!shape.getPos().toString().contains("NaN"))
+			{
+				g2.drawString("this shape has a positional vector of " + shape.getPos().x + "x" + shape.getPos().y, d, a+30);
+				g2.drawString("this shape has a velocity vector of " + shape.getVel().x + "x" + shape.getVel().y, d, a+45);
+				g2.drawString("this shape has a acceleration vector of " + shape.getAcc().x + "x" + shape.getAcc().y, d, a+60);
+				a += 75;
+				
+			}
+			else
+			{
+				g2.drawString("this shape has died", d, a+30);
+				a += 45;
+			}
 			if (a+60 > this.getHeight())
 			{
 				a = 10;
@@ -260,13 +295,18 @@ public void mouseClicked(MouseEvent arg0) {
 	{
 		switch (typeShape){
 			case 1:
-				shapes.add(new Ball(new Vec2f(arg0.getX(), arg0.getY()), new Vec2f(), 50, 50));
+				shapes.add(new Ball(new Vec2f(arg0.getX(), arg0.getY()), new Vec2f(), 50, 50, giveID()));
 				break;
 			case 2:
-				shapes.add(new Block(new Vec2f(arg0.getX(), arg0.getY()), new Vec2f(), 50, 50));
+				shapes.add(new Block(new Vec2f(arg0.getX(), arg0.getY()), new Vec2f(), 50, 50, giveID()));
 				break;
 			}
 	}
+}
+
+private int giveID() {
+	id += 1;
+	return id;
 }
 
 @Override

@@ -8,9 +8,9 @@ import java.util.ArrayList;
 public class Ball extends PhysShape {
 
 	private int r;
-	public Ball(Vec2f pos, Vec2f vel, int h, int w)
+	public Ball(Vec2f pos, Vec2f vel, int h, int w, int id)
 	{
-		super(pos, vel, h, w);
+		super(pos, vel, h, w, id);
 		r = h/2;
 	}
 	

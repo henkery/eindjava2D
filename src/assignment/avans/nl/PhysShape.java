@@ -14,6 +14,7 @@ public abstract class PhysShape {
 	protected Color color;
 
 	protected boolean grav;
+	int id;
 
 	
 
@@ -49,7 +50,7 @@ public abstract class PhysShape {
 	}
 	
 	
-	public PhysShape(Vec2f pos, Vec2f vel, int h, int w)
+	public PhysShape(Vec2f pos, Vec2f vel, int h, int w, int id)
 	{
 		this.pos = pos;
 		this.h = h;
@@ -59,6 +60,7 @@ public abstract class PhysShape {
 		held = false;
 		mass = 1;
 		acc = new Vec2f(0, 0);
+		this.id = id;
 	}
 	
 	public abstract boolean isClicked(int x, int y);
@@ -85,4 +87,14 @@ public abstract class PhysShape {
 	}
 
 	public abstract void calcMass();
+
+	public int getID() {
+		// TODO Auto-generated method stub
+		return id;
+	}
+	
+	public String toString()
+	{
+		return "vel:" + vel.toString() + "\nacc: " + acc.toString() + "\npos: " + pos.toString();
+	}
 }

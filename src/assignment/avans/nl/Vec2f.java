@@ -139,5 +139,10 @@ public class Vec2f
 		y= y/i;
 		
 	}
+	
+	public String toString()
+	{
+		return x + "x" + y;
+	}
 
 }

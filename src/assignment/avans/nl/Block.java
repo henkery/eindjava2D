@@ -10,8 +10,8 @@ import java.util.ArrayList;
 public class Block extends PhysShape {
 
 
-	public Block(Vec2f pos, Vec2f vel, int h, int w) {
-		super(pos, vel, h, w);
+	public Block(Vec2f pos, Vec2f vel, int h, int w, int id) {
+		super(pos, vel, h, w,id);
 
 	}
 
