@@ -129,4 +129,9 @@ public class Vec2f
 		return v;
 	}
 
+	public Vec2f negate() {
+		// TODO Auto-generated method stub
+		return new Vec2f(-x, -y);
+	}
+
 }

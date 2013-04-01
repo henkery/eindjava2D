@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -52,9 +54,10 @@ public class BallsnStuff extends JFrame {
                 wallA = !wallA;
             }
         });
+		//wallBut.setSize(wallBut.getWidth(), wallBut.getHeight()+1);
 		mainPanel.add(wallBut);
 		mainPanel.add(gravBut);
-		
+		mainPanel.revalidate();
 		
 		while (true)
 		{
@@ -82,7 +85,7 @@ public class BallsnStuff extends JFrame {
 }
 
 class DragAShapePanel extends JPanel 
-implements MouseListener, MouseMotionListener 
+implements MouseListener, MouseMotionListener, MouseWheelListener 
 {
 
 private int teller = 0;
@@ -91,15 +94,17 @@ private int x = 100;
 private int y = 100;
 
 //private Ball ball1,ball2;
-private ArrayList<Ball> balls;
+private ArrayList<PhysShape> shapes;
 
 boolean isSelected = false;
 
 private boolean knal;
 
-private Ballcage cage;
+private LevelCage cage;
 
 private boolean grav;
+
+private int typeShape;
 
 
 
@@ -110,15 +115,17 @@ public DragAShapePanel()
 	
 	addMouseListener(this);
 	addMouseMotionListener(this);
-	cage = new Ballcage(0, 0, this.getWidth(), this.getHeight());
-	balls = new ArrayList<Ball>();
+	addMouseWheelListener(this);
+	cage = new LevelCage(0, 0, this.getWidth(), this.getHeight());
+	shapes = new ArrayList<PhysShape>();
 	//balls.add(new Ball(new Vec2f(100, 100), new Vec2f(0, 0), 100, 100));
-	balls.add(new Ball(new Vec2f(200, 100), new Vec2f(1, 2), 100, 100));
+	//balls.add(new Ball(new Vec2f(200, 100), new Vec2f(1, 2), 100, 100));
 	//balls.add(new Ball(new Vec2f(300, 100), new Vec2f(0, 1), 100, 100));
-	balls.add(new Ball(new Vec2f(400, 100), new Vec2f(0, 0), 100, 100));
+	//balls.add(new Ball(new Vec2f(400, 100), new Vec2f(0, 0), 100, 100));
 	//balls.add(new Ball(new Vec2f(200, 100), 100, 100));
-	balls.add(new Ball(new Vec2f(600, 100), new Vec2f(-1, 0), 100, 100));
+	//balls.add(new Ball(new Vec2f(600, 100), new Vec2f(-1, 0), 100, 100));
 	grav = true;
+	typeShape = 1;
 }
 
 // Repaint
@@ -131,16 +138,20 @@ public void paintComponent(Graphics g)
 	
 	g2.drawString("Gravity is " + (BallsnStuff.getGrav()?"on":"off"), 10, 10);
 	g2.drawString("Walls do" + (BallsnStuff.getWallA()?"n't ":" ") + "absorb energy", 10, 25);
+	g2.drawString("Selected type shape is " + typeShape, 10, 40);
+	
 	
 	//ball1.update(this.getWidth(), this.getHeight());
 	//ball1.draw(g);
 	
 	cage.resizeCage(this.getHeight(), this.getWidth());
-	for (Ball ball : balls)
+	for (PhysShape shape : shapes)
 	{
-		ball.update(cage, BallsnStuff.getGrav(), BallsnStuff.getWallA()); 
-		ball.collide(balls);
-		ball.draw(g);
+		shape.update(cage, BallsnStuff.getGrav(), BallsnStuff.getWallA()); 
+		shape.collide(shapes);
+		
+		
+		shape.draw(g);
 	}
 	
 	if (knal)
@@ -190,7 +201,7 @@ public Color randomColor()
 
 @Override
 public void mouseDragged(MouseEvent arg0) {
-	for (Ball item : balls)
+	for (PhysShape item : shapes)
 	{
 		if (item.isClicked(arg0.getX(), arg0.getY()))
 		{
@@ -218,9 +229,17 @@ public void mouseMoved(MouseEvent arg0) {
 
 @Override
 public void mouseClicked(MouseEvent arg0) {
-	
-	
-	
+	if (arg0.getButton() == MouseEvent.BUTTON3)	
+	{
+		switch (typeShape){
+			case 1:
+				shapes.add(new Ball(new Vec2f(arg0.getX(), arg0.getY()), new Vec2f(), 50, 50));
+				break;
+			case 2:
+				shapes.add(new Block(new Vec2f(arg0.getX(), arg0.getY()), new Vec2f(), 50, 50));
+				break;
+			}
+	}
 }
 
 @Override
@@ -242,11 +261,21 @@ public void mousePressed(MouseEvent arg0) {
 
 @Override
 public void mouseReleased(MouseEvent arg0) {
-	for (Ball item : balls)
+	for (PhysShape item : shapes)
 	{
 //		Vec2f vel = new Vec2f(largeX - smallX, largeY - smallY);
 		//Vec2f vel = new Vec2f(arg0.getX() - item.getPos().x, arg0.getY()- item.getPos().y);
 		item.release();
 	}
+}
+
+@Override
+public void mouseWheelMoved(MouseWheelEvent e) {
+	typeShape += e.getWheelRotation();
+	if (typeShape < 1)
+		typeShape = 2;
+	else if (typeShape > 2)
+		typeShape = 1;
+	
 }
 }
